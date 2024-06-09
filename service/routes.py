@@ -20,7 +20,7 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
 
@@ -97,23 +97,39 @@ def create_products():
 ######################################################################
 # L I S T   A L L   P R O D U C T S
 ######################################################################
+#
+# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
+#
 @app.route("/products", methods=["GET"])
 def list_produces():
     """ Lists all products """
     app.logger.info("Listing all products")
 
-    products = Product.all()
-    product_list = [ product.serialize() for product in products ]
+    products = []
+    name = request.args.get("name")
+    category = request.args.get("category")
+    availability = request.args.get("availability")
+    if name:
+        app.logger.info("Find by name: %s", name)
+        products = Product.find_by_name(name)
+    elif category:
+        app.logger.info("Find by category: %s", category)
+        category_value = getattr(Category, category.upper())
+        products = Product.find_by_category(category_value)
+    elif availability:
+        app.logger.info("Find by availability: %s", availability)
+        products = Product.find_by_availability(availability)
+    else:
+        app.logger.info("Find all")
+        products = Product.all()
+
+    product_list = [product.serialize() for product in products]
     app.logger.info(f"Returning {len(product_list)} products")
     return product_list, status.HTTP_200_OK
-
-# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
-#
 
 ######################################################################
 # R E A D   A   P R O D U C T
 ######################################################################
-
 #
 # PLACE YOUR CODE HERE TO READ A PRODUCT
 #
