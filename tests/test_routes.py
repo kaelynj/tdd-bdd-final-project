@@ -184,16 +184,44 @@ class TestProductRoutes(TestCase):
         # Create a new product to update
         product = ProductFactory()
         response = self.client.post(f'{BASE_URL}', 
-                            json=test_product.serialize())
+                            json=product.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Update the product
         new_product = response.get_json()
         new_product["description"] = 'unknown'
-        response = self.client.put(f'{BASE_URL}/{new_product['id']}', json=new_product.serialize())
-        self.assertEqual(response.status_codem status.HTTP_200_OK)
+        response = self.client.put(f"{BASE_URL}/{new_product['id']}", json=new_product)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product['description'], new_product['description'])
+
+    def test_delete_product(self):
+        """ It should delete a product """
+        # Create batch of products
+        products = self._create_products(5)
+        count = self.get_product_count()
+
+        # Delete a product
+        test_product = products[0]
+        response = self.client.delete(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+
+        # Check to ensure product was deleted
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        new_count = self.get_product_count()
+        self.assertEqual(new_count, count - 1)
+
+    def test_list_all_products(self):
+        """ It should list all products """
+        self._create_products(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+
 
     ######################################################################
     # Utility functions
