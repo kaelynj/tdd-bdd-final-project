@@ -133,6 +133,8 @@ def list_produces():
 #
 # PLACE YOUR CODE HERE TO READ A PRODUCT
 #
+
+
 @app.route("/products/<product_id>", methods=["GET"])
 def get_products(product_id):
     """
@@ -151,10 +153,11 @@ def get_products(product_id):
 ######################################################################
 # U P D A T E   A   P R O D U C T
 ######################################################################
-
 #
 # PLACE YOUR CODE TO UPDATE A PRODUCT HERE
 #
+
+
 @app.route("/products/<product_id>", methods=["PUT"])
 def update_product(product_id):
     """

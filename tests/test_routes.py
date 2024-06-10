@@ -184,8 +184,8 @@ class TestProductRoutes(TestCase):
         """ It should Update a single product """
         # Create a new product to update
         product = ProductFactory()
-        response = self.client.post(f'{BASE_URL}', 
-                            json=product.serialize())
+        response = self.client.post(f'{BASE_URL}',
+                                    json=product.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Update the product
@@ -227,9 +227,9 @@ class TestProductRoutes(TestCase):
         products = self._create_products(5)
         test_name = products[0].name
         name_count = len([product.name for product in products if product.name == test_name])
-        response = self.client.get(f'{BASE_URL}', 
-                    query_string=f"name={quote_plus(test_name)}"
-                    )
+        response = self.client.get(f'{BASE_URL}',
+                                   query_string=f"name={quote_plus(test_name)}"
+                                   )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), name_count)
@@ -240,14 +240,13 @@ class TestProductRoutes(TestCase):
         """ It should get products by category """
         products = self._create_products(10)
         test_category = products[0].category
-        category_count = len([product.category for product in products 
-                                if product.category == test_category])
+        category_count = len([product.category for product in products
+                              if product.category == test_category])
         response = self.client.get(f'{BASE_URL}',
-                    query_string=f"category={quote_plus(test_category.name)}"
-                    )
+                                   query_string=f"category={quote_plus(test_category.name)}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
-        self.assertEqual(len(data), category_count) 
+        self.assertEqual(len(data), category_count)
         for product in data:
             self.assertEqual(product['category'], test_category.name)
 
@@ -255,23 +254,19 @@ class TestProductRoutes(TestCase):
         """ It should get products by availability """
         products = self._create_products(10)
         available_products = [product.available for product in products
-                                    if product.available is True]
+                              if product.available is True]
         available_count = len(available_products)
         response = self.client.get(BASE_URL,
-                    query_string=f"availability=true"
-                    )
+                                   query_string="availability=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), available_count)
         for product in data:
             self.assertEqual(product['available'], True)
 
-
-
     ######################################################################
     # Utility functions
     ######################################################################
-
     def get_product_count(self):
         """save the current number of products"""
         response = self.client.get(BASE_URL)
